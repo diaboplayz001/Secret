@@ -1,0 +1,236 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Locked: For Neha ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
+    <style>
+        /* --- STYLES --- */
+        @import url('https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Poppins:wght@300;400;600&display=swap');
+        :root { --primary: #ff4d6d; --secondary: #ff8fa3; --bg: #fff0f3; --text: #590d22; --white: #ffffff; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: 'Poppins', sans-serif; background-color: var(--bg); color: var(--text); overflow-x: hidden; text-align: center; }
+
+        /* Login Overlay */
+        #login-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(135deg, #fff0f3 0%, #ffe5ec 100%); z-index: 10000; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: opacity 1s ease; }
+        .login-box { background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 30px rgba(255, 77, 109, 0.2); width: 90%; max-width: 400px; text-align: center; }
+        .login-box h2 { font-family: 'Dancing Script', cursive; color: var(--primary); font-size: 2.5rem; margin-bottom: 20px; }
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 0.9rem; margin-bottom: 5px; color: #666; }
+        .input-group input { width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 10px; outline: none; transition: border-color 0.3s; }
+        .input-group input:focus { border-color: var(--secondary); }
+        .submit-btn { background: var(--primary); color: white; border: none; padding: 12px 30px; border-radius: 50px; font-size: 1.1rem; cursor: pointer; margin-top: 10px; width: 100%; transition: transform 0.2s; }
+        .submit-btn:hover { transform: scale(1.02); }
+        .error-msg { color: red; margin-top: 15px; display: none; font-size: 0.9rem; }
+
+        /* Main Site (Hidden until unlocked) */
+        .heart-bg { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: -1; overflow: hidden; }
+        .heart { position: absolute; bottom: -100px; background-color: var(--secondary); display: inline-block; height: 30px; width: 30px; margin: 0 10px; border-radius: 50%; animation: float 6s linear infinite; opacity: 0.6; }
+        .heart:before, .heart:after { content: ""; position: absolute; top: 0; width: 100%; height: 100%; background-color: inherit; border-radius: 50%; }
+        .heart:before { left: -50%; } .heart:after { left: 0; top: -50%; }
+        @keyframes float { 0% { transform: translateY(0) rotate(0deg); opacity: 1; } 100% { transform: translateY(-100vh) rotate(360deg); opacity: 0; } }
+
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; }
+        header { height: 100vh; display: flex; flex-direction: column; justify-content: center; align-items: center; }
+        h1 { font-family: 'Dancing Script', cursive; font-size: 4rem; color: var(--primary); margin-bottom: 10px; }
+        .section-title { font-family: 'Dancing Script', cursive; font-size: 2.5rem; margin: 60px 0 30px; color: var(--primary); }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; }
+        .memory-card { background: var(--white); padding: 25px; border-radius: 15px; box-shadow: 0 8px 20px rgba(255, 77, 109, 0.15); transition: transform 0.3s; border-bottom: 4px solid var(--primary); }
+        .memory-card:hover { transform: translateY(-10px); }
+        .memory-title { font-weight: 600; font-size: 1.2rem; margin-bottom: 10px; color: var(--primary); }
+        .memory-text { font-size: 0.95rem; line-height: 1.6; color: #666; font-style: italic; }
+        
+        /* Game Area */
+        .game-area { background: var(--white); padding: 50px 30px; border-radius: 20px; margin-top: 60px; box-shadow: 0 10px 40px rgba(255, 77, 109, 0.2); }
+        .btn-group { margin-top: 30px; display: flex; justify-content: center; gap: 20px; }
+        button { padding: 15px 35px; font-size: 1.2rem; border: none; border-radius: 50px; cursor: pointer; transition: all 0.3s ease; font-family: 'Poppins', sans-serif; font-weight: 600; }
+        .yes-btn { background-color: var(--primary); color: white; box-shadow: 0 5px 15px rgba(255, 77, 109, 0.4); }
+        .yes-btn:hover { transform: scale(1.1); }
+        .no-btn { background-color: #e5e5e5; color: #555; position: relative; }
+        
+        .success-box { display: none; animation: popIn 0.6s cubic-bezier(0.68, -0.55, 0.265, 1.55); }
+        .sticker { font-size: 5rem; display: block; margin: 10px auto; animation: pulse 1s infinite alternate; }
+        @keyframes popIn { 0% { transform: scale(0); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
+        @keyframes pulse { from { transform: scale(1); } to { transform: scale(1.1); } }
+        
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+        footer { margin-top: 80px; padding: 20px; font-size: 0.9rem; color: #888; }
+        @media (max-width: 600px) { h1 { font-size: 3rem; } .subtitle { font-size: 1.1rem; } }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>Prove It's You</h2>
+            <p style="margin-bottom: 20px; font-size: 0.9rem; color: #666;">Security Question: Do you remember?</p>
+            <div class="input-group"><label>Your Name</label><input type="text" id="herName" placeholder="Your Name"></div>
+            <div class="input-group"><label>My Name</label><input type="text" id="myName" placeholder="My Name"></div>
+            <div class="input-group"><label>Date we first met?</label><input type="date" id="dateMet"></div>
+            <button class="submit-btn" onclick="verifyUser()">Unlock</button>
+            <div class="error-msg" id="errorMsg"></div>
+        </div>
+    </div>
+
+    <div class="heart-bg" id="heart-bg"></div>
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="container">
+        <header>
+            <h1>Hello, Neha</h1>
+            <p class="subtitle" style="font-size: 1.5rem;">You are my <span style="color:var(--primary); font-weight:bold;">Everything ❤️</span></p>
+        </header>
+
+        <h2 class="section-title">Us Together ✨</h2>
+        <div class="gallery">
+            <div class="memory-card">
+                <div class="memory-title">When We First Met</div>
+                <div class="memory-text">"I still remember the first time we spoke. I knew instantly that my life was about to change forever."</div>
+            </div>
+            <div class="memory-card">
+                <div class="memory-title">Our Late Night Talks</div>
+                <div class="memory-text">"Those nights where we stay up just talking about everything and nothing. That's when I feel closest to you."</div>
+            </div>
+            <div class="memory-card">
+                <div class="memory-title">Why I Call You Wifey</div>
+                <div class="memory-text">"Because I can't imagine my future without you in it. You are my home."</div>
+            </div>
+        </div>
+
+        <div class="game-area" id="gameArea">
+            <div id="question-box">
+                <h2 style="font-family: 'Dancing Script'; color: var(--primary);">One Final Question...</h2>
+                <p>Do you love me as much as I love you?</p>
+                <div class="btn-group">
+                    <button class="yes-btn" onclick="handleYes()">YES! ❤️</button>
+                    <button class="no-btn" id="noBtn" onmouseover="moveButton()" onclick="moveButton()">No</button>
+                </div>
+            </div>
+            <div class="success-box" id="successBox">
+                <span class="sticker">💖💏💖</span>
+                <h3>I Knew It!</h3>
+                <p>I love you so much, Neha! You are my forever.</p>
+            </div>
+        </div>
+
+        <footer>Made with all my heart for my Cutie <br> &copy; 2024</footer>
+    </div>
+
+    <script>
+        // ================= APPWRITE CONFIG =================
+        const PROJECT_ID = '6981e6f500235cc77274'; 
+        const DB_ID = '6981e9f700319aae20fd';
+        const LOGS_COLLECTION_ID = 'login_attempts'; 
+        const SECRET_COLLECTION_ID = 'secret_key'; 
+        // ===================================================
+
+        const { Client, Databases, ID, Query } = Appwrite;
+        const client = new Client().setEndpoint('https://sgp.cloud.appwrite.io/v1').setProject(PROJECT_ID);
+        const databases = new Databases(client);
+
+        async function verifyUser() {
+            const hName = document.getElementById('herName').value.trim().toLowerCase();
+            const mName = document.getElementById('myName').value.trim().toLowerCase();
+            const date = document.getElementById('dateMet').value;
+            const errorMsg = document.getElementById('errorMsg');
+
+            // 1. QUERY THE DATABASE FOR THE ANSWER
+            // We ask Appwrite: "Find me a document where valid_her_name == hName AND valid_my_name == mName..."
+            try {
+                const response = await databases.listDocuments(
+                    DB_ID,
+                    SECRET_COLLECTION_ID,
+                    [
+                        Query.equal('valid_her_name', hName),
+                        Query.equal('valid_my_name', mName),
+                        Query.equal('valid_date', date)
+                    ]
+                );
+
+                if (response.total > 0) {
+                    // --- SUCCESS LOGIC ---
+                    // 1. Log the success
+                    logAttempt(hName, mName, date, "SUCCESS");
+                    
+                    // 2. Unlock Screen
+                    document.getElementById('login-overlay').style.opacity = '0';
+                    setTimeout(() => { document.getElementById('login-overlay').style.display = 'none'; }, 1000);
+                } else {
+                    // --- FAIL LOGIC ---
+                    // 1. Log the failure
+                    logAttempt(hName, mName, date, "FAILED");
+                    
+                    // 2. Show Error
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerHTML = "😭 Wrong answer! Checking database...";
+                }
+
+            } catch (error) {
+                console.error("Database Query Error:", error);
+                errorMsg.style.display = 'block';
+                errorMsg.innerHTML = "⚠️ Database Error. Did you set up Indexes in Appwrite?";
+            }
+        }
+
+        async function logAttempt(h, m, d, status) {
+            try {
+                await databases.createDocument(
+                    DB_ID, 
+                    LOGS_COLLECTION_ID, 
+                    ID.unique(), 
+                    { 
+                        her_name: h, 
+                        my_name: m, 
+                        date_met: d, 
+                        status: status,
+                        timestamp: new Date().toISOString() 
+                    }
+                );
+            } catch (e) { console.log("Logging failed", e); }
+        }
+
+        // --- Visual Effects ---
+        function createHeart() {
+            const heart = document.createElement('div'); heart.classList.add('heart');
+            heart.style.left = Math.random() * 100 + "vw"; heart.style.animationDuration = Math.random() * 2 + 3 + "s";
+            document.getElementById('heart-bg').appendChild(heart);
+            setTimeout(() => heart.remove(), 5000);
+        }
+        setInterval(createHeart, 300);
+
+        const noBtn = document.getElementById('noBtn');
+        function moveButton() {
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight);
+            noBtn.style.position = 'fixed'; noBtn.style.left = `${x}px`; noBtn.style.top = `${y}px`;
+        }
+
+        function handleYes() {
+            document.getElementById('question-box').style.display = 'none';
+            document.getElementById('successBox').style.display = 'block';
+            startConfetti();
+        }
+
+        function startConfetti() {
+            const canvas = document.getElementById('confetti-canvas'); const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth; canvas.height = window.innerHeight;
+            const pieces = []; const colors = ['#ff4d6d', '#ffb703', '#80ed99', '#00b4d8', '#ffccd5'];
+            for (let i = 0; i < 200; i++) {
+                pieces.push({ x: Math.random() * canvas.width, y: Math.random() * canvas.height - canvas.height, color: colors[Math.floor(Math.random() * colors.length)], size: Math.random() * 10 + 5, speed: Math.random() * 5 + 2, angle: Math.random() * 360 });
+            }
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    ctx.save(); ctx.translate(p.x, p.y); ctx.rotate(p.angle * Math.PI / 180);
+                    ctx.fillStyle = p.color; ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size); ctx.restore();
+                    p.y += p.speed; p.angle += 2;
+                    if (p.y > canvas.height) p.y = -20;
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+    </script>
+</body>
+</html>
