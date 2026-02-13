@@ -1,0 +1,399 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Valentine's Day Special ❤️</title>
+    <script src="https://cdn.jsdelivr.net/npm/appwrite@14.0.1"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@700&family=Sacramento&family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+    
+    <style>
+        /* --- VALENTINE THEME CSS --- */
+        :root {
+            --red: #d90429;
+            --pink: #ef233c;
+            --light-pink: #ffe5ec;
+            --white: #ffffff;
+            --text: #2b2d42;
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: linear-gradient(135deg, #ff9a9e 0%, #fecfef 99%, #fecfef 100%);
+            color: var(--text);
+            overflow-x: hidden;
+            text-align: center;
+            min-height: 100vh;
+        }
+
+        /* --- LOGIN OVERLAY --- */
+        #login-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            z-index: 10000;
+            display: flex; flex-direction: column; justify-content: center; align-items: center;
+            transition: opacity 0.8s ease;
+        }
+
+        .login-box {
+            background: white; padding: 40px; border-radius: 25px;
+            box-shadow: 0 20px 60px rgba(239, 35, 60, 0.25);
+            width: 90%; max-width: 380px; text-align: center;
+            border: 2px solid var(--light-pink);
+        }
+
+        .login-box h2 {
+            font-family: 'Sacramento', cursive;
+            color: var(--red); font-size: 2.8rem; margin-bottom: 10px;
+        }
+
+        .input-group { margin-bottom: 15px; text-align: left; }
+        .input-group label { display: block; font-size: 0.85rem; margin-bottom: 5px; color: #888; font-weight: 600; }
+        .input-group input {
+            width: 100%; padding: 12px; border: 2px solid #eee; border-radius: 12px;
+            outline: none; transition: all 0.3s; background: #fafafa;
+        }
+        .input-group input:focus { border-color: var(--pink); background: white; box-shadow: 0 0 10px rgba(239, 35, 60, 0.1); }
+
+        .submit-btn {
+            background: var(--red); color: white; border: none; padding: 14px 0;
+            border-radius: 50px; font-size: 1.1rem; cursor: pointer; margin-top: 15px; width: 100%;
+            font-weight: 600; letter-spacing: 1px; transition: transform 0.2s, box-shadow 0.2s;
+        }
+        .submit-btn:hover { transform: translateY(-2px); box-shadow: 0 10px 20px rgba(217, 4, 41, 0.3); }
+
+        .error-msg { color: var(--red); margin-top: 15px; display: none; font-size: 0.9rem; font-weight: 600; }
+
+        /* --- MAIN SITE --- */
+        .container { max-width: 800px; margin: 0 auto; padding: 20px; position: relative; z-index: 2; }
+
+        /* Floating Hearts BG */
+        .bg-hearts { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 0; }
+        .heart-float {
+            position: absolute; bottom: -10px; font-size: 2rem;
+            animation: floatUp 8s linear infinite; opacity: 0;
+        }
+        @keyframes floatUp {
+            0% { transform: translateY(0) rotate(0deg); opacity: 1; }
+            100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+        }
+
+        header { padding: 80px 0 50px; }
+        h1 {
+            font-family: 'Sacramento', cursive; font-size: 4.5rem; color: var(--red);
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1); line-height: 1.2;
+        }
+        .subtitle { font-size: 1.3rem; color: #555; margin-top: 10px; letter-spacing: 1px; }
+        
+        /* Love Letter Card */
+        .love-letter {
+            background: white; padding: 40px; border-radius: 20px;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.05); margin: 40px 0;
+            position: relative; overflow: hidden;
+        }
+        .love-letter::before {
+            content: "💌"; position: absolute; top: -20px; right: -20px; font-size: 10rem; opacity: 0.05;
+        }
+        .letter-text {
+            font-size: 1.1rem; line-height: 1.8; color: #444; font-style: italic;
+        }
+
+        /* Photo/Memory Grid */
+        .gallery-title { font-family: 'Dancing Script', cursive; font-size: 2.5rem; color: var(--red); margin: 50px 0 30px; }
+        .gallery { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 20px; }
+        .memory-card {
+            background: white; padding: 15px; border-radius: 15px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05); transition: transform 0.3s;
+        }
+        .memory-card:hover { transform: scale(1.05) rotate(-2deg); }
+        
+        /* Text Frame Logic */
+        .photo-frame {
+            width: 100%; 
+            height: 200px; 
+            background: #ffe5ec; 
+            border-radius: 10px;
+            display: flex; 
+            align-items: center; 
+            justify-content: center; 
+            
+            /* Text Styling */
+            font-size: 1.8rem;
+            font-family: 'Dancing Script', cursive;
+            color: var(--pink);
+            padding: 10px;
+            text-align: center;
+            margin-bottom: 10px; 
+            overflow: hidden;
+            line-height: 1.2;
+        }
+
+        /* Valentine Proposal Area */
+        .proposal-area {
+            margin-top: 80px; padding: 60px 20px; background: white;
+            border-radius: 30px; box-shadow: 0 20px 50px rgba(239, 35, 60, 0.15);
+            position: relative; border: 4px solid var(--light-pink);
+        }
+        .big-question { font-family: 'Sacramento', cursive; font-size: 3.5rem; color: var(--red); margin-bottom: 20px; }
+        
+        .btn-group { display: flex; justify-content: center; gap: 30px; margin-top: 40px; }
+        button {
+            padding: 15px 40px; font-size: 1.3rem; border: none; border-radius: 50px;
+            cursor: pointer; font-family: 'Poppins', sans-serif; font-weight: 600;
+            transition: transform 0.2s;
+        }
+        .yes-btn { background: var(--red); color: white; box-shadow: 0 10px 25px rgba(217, 4, 41, 0.4); }
+        .yes-btn:hover { transform: scale(1.1); background: #ef233c; }
+        .no-btn { background: #eee; color: #555; position: relative; }
+
+        /* Success Message */
+        .success-overlay {
+            display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(255,255,255,0.98); z-index: 5000;
+            flex-direction: column; justify-content: center; align-items: center;
+        }
+        .success-text { font-family: 'Dancing Script'; font-size: 4rem; color: var(--red); margin-bottom: 20px; animation: popIn 0.5s ease; }
+        @keyframes popIn { 0% { transform: scale(0); } 100% { transform: scale(1); } }
+
+        #confetti-canvas { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 9999; }
+
+        /* Mobile Adjustments */
+        @media (max-width: 600px) {
+            h1 { font-size: 3.5rem; }
+            .big-question { font-size: 2.5rem; }
+            .btn-group { gap: 15px; }
+            button { padding: 12px 30px; font-size: 1.1rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="login-overlay">
+        <div class="login-box">
+            <h2>Love Lock ❤️</h2>
+            <p style="margin-bottom: 25px; color: #666;">Prove It's My Baby</p>
+            
+            <div class="input-group">
+                <label>Your Name</label>
+                <input type="text" id="herName" placeholder="name">
+            </div>
+            <div class="input-group">
+                <label>My Name</label>
+                <input type="text" id="myName" placeholder="name">
+            </div>
+            <div class="input-group">
+                <label>Date we met</label>
+                <input type="date" id="dateMet">
+            </div>
+
+            <button class="submit-btn" onclick="verifyUser()">Unlock My Heart</button>
+            <div class="error-msg" id="errorMsg"></div>
+        </div>
+    </div>
+
+    <div class="bg-hearts" id="bg-hearts"></div>
+    <canvas id="confetti-canvas"></canvas>
+
+    <div class="container">
+        
+        <header>
+            <h1>Happy Valentine's Day,<br>Neha Baby ❤️</h1>
+            <p class="subtitle">You are my today and all of my tomorrows.</p>
+        </header>
+
+        <div class="love-letter">
+            <h3 style="font-family:'Dancing Script'; font-size:2rem; color:var(--red); margin-bottom:10px;">To My Baby...</h3>
+            <p class="letter-text">
+                "Hey love… two years of you slowly stealing every piece of me, and honestly? You already claimed my whole heart without trying. I still replay that one kiss like it’s my favorite movie scene on loop, the way your lips felt so soft and sure, like the universe paused just for us. Every time I think about sipping from that same coffee cup after your lips touched the straw, or how my mouth chased the exact spot yours left behind… it sends this warm, electric shiver straight through me, like we were already sharing secrets our bodies knew before our words caught up Remember holding hands through the mall, temple corridors, random roads—your fingers fitting mine so perfectly it felt illegal to ever let go? And those auto rides… my hand on your thigh, feeling you shift closer, that quiet thrill when the world blurred past and it was just us, heat building under innocent touches that weren’t so innocent anymore  God, I miss the way you’d look at me sideways, pretending it was nothing while my pulse hammered like I’d run a marathon just from being near you.We’ve built so many unforgettable little eternities already those stolen moments are proof distance can’t erase what’s real between us. But baby, when we close this gap… I’m gonna hold you so tight you’ll forget what empty arms feel like. I’ll trace every memory back onto your skin slow kisses where that straw once was, hands everywhere they’ve been and places they’ve only dreamed of going, making you blush and gasp and whisper my name like a prayer. You’re my sweetest habit, my hottest secret, my forever kind of trouble. I love you more stupidly every day. Count the nights till I can ruin you with cuddles… and a little chaos right after Come back to me soon, my heart thief. I’m waiting with all the love and all the mischief we left behind."
+            </p>
+        </div>
+
+        <h2 class="gallery-title">Our Love Story ✨</h2>
+        <div class="gallery">
+            <div class="memory-card">
+                <div class="photo-frame">
+                    8th July 2025, It wasn't the perfect one but still being with you made it so magical and memorable...<br>❤️
+                </div>
+                <p><strong>The First Date</strong><br><span style="font-size:0.9rem; color:#666;">Magical moments.</span></p>
+            </div>
+            <div class="memory-card">
+                <div class="photo-frame">
+                    I love seeing you happy and laughing, be it on serious situation or at the time I'm ready for something else🥲😂
+                </div>
+                <p><strong>Being Silly</strong><br><span style="font-size:0.9rem; color:#666;">I love your laugh.</span></p>
+            </div>
+            <div class="memory-card">
+                <div class="photo-frame">
+                    My Future<br>Wife 💍<br> And 2 Dozen Kids
+                </div>
+                <p><strong>Future Plans</strong><br><span style="font-size:0.9rem; color:#666;">Growing old together.</span></p>
+            </div>
+        </div>
+
+        <div class="proposal-area">
+            <h2 class="big-question">Will you be my Valentine? 🌹</h2>
+            <p>Make me the happiest boy alive?</p>
+            
+            <div class="btn-group">
+                <button class="yes-btn" onclick="handleYes()">YES! ❤️</button>
+                <button class="no-btn" id="noBtn" onmouseover="moveButton()" onclick="moveButton()">No</button>
+            </div>
+        </div>
+
+        <footer style="margin-top: 50px; color: #888; font-size: 0.8rem;">
+            Coded by Cutu for his lovely wifey... <br> &copy; 2026
+        </footer>
+    </div>
+
+    <div class="success-overlay" id="successOverlay">
+        <div class="success-text">Yay! She said YES! 💖</div>
+        <p style="font-size: 1.5rem; color: #555;">I Love You Neha Baby!</p>
+        <div style="font-size: 5rem; margin-top: 20px;">💏💍🌹</div>
+    </div>
+
+    <script>
+        // ==================================================
+        // ⚠️ PASTE YOUR APPWRITE IDs HERE ⚠️
+        // ==================================================
+        const PROJECT_ID = '6981e6f500235cc77274'; 
+        const DB_ID = '6981e9f700319aae20fd';
+        const LOGS_COLLECTION_ID = 'login_attempts'; 
+        const SECRET_COLLECTION_ID = 'secret_key'; 
+        // ==================================================
+
+        const { Client, Databases, ID, Query } = Appwrite;
+        
+        // --- 🔴 THE SGP ENDPOINT FIX ---
+        const client = new Client()
+            .setEndpoint('https://sgp.cloud.appwrite.io/v1') 
+            .setProject(PROJECT_ID);
+
+        const databases = new Databases(client);
+
+        async function verifyUser() {
+            const hName = document.getElementById('herName').value.trim().toLowerCase();
+            const mName = document.getElementById('myName').value.trim().toLowerCase();
+            const date = document.getElementById('dateMet').value;
+            const errorMsg = document.getElementById('errorMsg');
+            const btn = document.querySelector('.submit-btn');
+
+            btn.textContent = "Checking...";
+            
+            try {
+                // 1. Verify credentials against Secret Key Table
+                const response = await databases.listDocuments(
+                    DB_ID,
+                    SECRET_COLLECTION_ID,
+                    [
+                        Query.equal('valid_her_name', hName),
+                        Query.equal('valid_my_name', mName),
+                        Query.equal('valid_date', date)
+                    ]
+                );
+
+                if (response.total > 0) {
+                    // Success! Log it and Unlock
+                    logAttempt(hName, mName, date, "SUCCESS");
+                    document.getElementById('login-overlay').style.opacity = '0';
+                    setTimeout(() => { 
+                        document.getElementById('login-overlay').style.display = 'none'; 
+                        startHearts(); // Start background animation
+                    }, 800);
+                } else {
+                    // Fail!
+                    logAttempt(hName, mName, date, "FAILED");
+                    errorMsg.style.display = 'block';
+                    errorMsg.innerHTML = "💔 Incorrect! Are you really My Baby Neha?";
+                    btn.textContent = "Try Again";
+                }
+            } catch (error) {
+                console.error(error);
+                errorMsg.style.display = 'block';
+                errorMsg.innerHTML = "⚠️ Network Error. Refresh & try again.";
+                btn.textContent = "Unlock My Heart";
+            }
+        }
+
+        async function logAttempt(h, m, d, status) {
+            try {
+                await databases.createDocument(
+                    DB_ID, LOGS_COLLECTION_ID, ID.unique(), 
+                    { her_name: h, my_name: m, date_met: d, status: status, timestamp: new Date().toISOString() }
+                );
+            } catch(e) { console.log("Log error", e); }
+        }
+
+        // --- VALENTINE LOGIC ---
+        
+        function startHearts() {
+            const container = document.getElementById('bg-hearts');
+            const emojis = ['❤️', '💖', '🌹', '💕', '💋'];
+            
+            setInterval(() => {
+                const el = document.createElement('div');
+                el.classList.add('heart-float');
+                el.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                el.style.left = Math.random() * 100 + "vw";
+                el.style.animationDuration = (Math.random() * 5 + 5) + "s"; // 5-10s float
+                el.style.fontSize = (Math.random() * 20 + 20) + "px";
+                container.appendChild(el);
+                setTimeout(() => el.remove(), 10000);
+            }, 400);
+        }
+
+        const noBtn = document.getElementById('noBtn');
+        function moveButton() {
+            const x = Math.random() * (window.innerWidth - noBtn.offsetWidth - 20);
+            const y = Math.random() * (window.innerHeight - noBtn.offsetHeight - 20);
+            noBtn.style.position = 'fixed';
+            noBtn.style.left = `${x}px`;
+            noBtn.style.top = `${y}px`;
+        }
+
+        function handleYes() {
+            document.getElementById('successOverlay').style.display = 'flex';
+            startConfetti();
+        }
+
+        function startConfetti() {
+            const canvas = document.getElementById('confetti-canvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            const pieces = [];
+            const colors = ['#d90429', '#ef233c', '#ffb703', '#80ed99'];
+
+            for (let i = 0; i < 300; i++) {
+                pieces.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    size: Math.random() * 8 + 4,
+                    speed: Math.random() * 5 + 2,
+                    angle: Math.random() * 360
+                });
+            }
+
+            function draw() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                pieces.forEach(p => {
+                    ctx.save();
+                    ctx.translate(p.x, p.y);
+                    ctx.rotate(p.angle * Math.PI / 180);
+                    ctx.fillStyle = p.color;
+                    ctx.fillRect(-p.size / 2, -p.size / 2, p.size, p.size);
+                    ctx.restore();
+                    p.y += p.speed;
+                    p.angle += 2;
+                    if (p.y > canvas.height) p.y = -20;
+                });
+                requestAnimationFrame(draw);
+            }
+            draw();
+        }
+    </script>
+</body>
+</html>
